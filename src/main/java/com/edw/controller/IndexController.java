@@ -1,11 +1,10 @@
 package com.edw.controller;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.camel.builder.RouteBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.AbstractDataSource;
+import org.springframework.stereotype.Component;
+import javax.sql.DataSource;
 
 /**
  * <pre>
@@ -15,17 +14,28 @@ import java.util.Map;
  * @author Muhammad Edwin < edwin at redhat dot com >
  * 13 Agt 2021 09:29
  */
-@RestController
-public class IndexController {
+@Component
+public class IndexController extends RouteBuilder {
 
-    @Value("${server.password}")
-    private String serverPassword;
+    @Autowired
+    DataSource dataSource;
 
-    @GetMapping("/")
-    public Map helloWorld() {
-        return new HashMap() {{
-            put("hello", "world");
-            put("password", serverPassword);
-        }};
+    @Override
+    public void configure() {        
+        from("timer:myTimer?repeatCount=1")
+        .setBody(simple("SELECT empName, empEmail FROM LEARN101.dbo.employees"))
+        .log("SQL: ${body}")
+        .log("Out: {OPENSHIFT_APP_PASSWORD}");
+
+    // @Value("${server.password}")
+    // private String serverPassword;
+
+    // @GetMapping("/")
+    // public Map helloWorld() {
+    //     return new HashMap() {{
+    //         put("hello", "world");
+    //         put("password", serverPassword);
+    //     }};
+    // }
     }
 }
