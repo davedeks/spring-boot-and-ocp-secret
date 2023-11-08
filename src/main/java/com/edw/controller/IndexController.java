@@ -25,7 +25,7 @@ public class IndexController extends RouteBuilder {
         from("timer:myTimer?repeatCount=1")
         .setBody(simple("SELECT empName, empEmail FROM LEARN101.dbo.employees"))
         .log("SQL: ${body}")
-        .log("Out: {OPENSHIFT_APP_PASSWORD}");
+        .log("Out: {{spring.datasource.password}}");
 
     // @Value("${server.password}")
     // private String serverPassword;
